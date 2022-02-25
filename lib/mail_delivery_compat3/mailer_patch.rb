@@ -167,7 +167,7 @@ module RedmineMailDeliveryCompat3
         cc = (users & @news.notified_watchers_for_added_news) - to
         headers[:to] = to
         headers[:cc] = cc
-      elsif @message # message_posted
+      elsif @message && @message.is_a?(Message) # message_posted
         to = users & @message.notified_users
         cc = @message.root.notified_watchers
         cc |= @message.board.notified_watchers
