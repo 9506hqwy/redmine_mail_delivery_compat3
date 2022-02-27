@@ -155,7 +155,7 @@ module RedmineMailDeliveryCompat3
         headers[:cc] = cc
       elsif @document # document_added
         # pass
-      elsif @atachments # attachments_added
+      elsif @attachments # attachments_added
         # pass
       elsif @comment # news_comment_added
         to = users & @news.notified_users
