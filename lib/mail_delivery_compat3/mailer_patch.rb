@@ -4,7 +4,7 @@ module RedmineMailDeliveryCompat3
   module MailerClassPatch
     def deliver_issue_add(issue)
       project = issue.project
-      if enable_module?(project)
+      if mail_delivery_compat3_enable_module?(project)
         users = issue.notified_users | issue.notified_watchers
         issue_add(users, issue).deliver_later
       else
@@ -14,7 +14,7 @@ module RedmineMailDeliveryCompat3
 
     def deliver_issue_edit(journal)
       project = journal.project
-      if enable_module?(project)
+      if mail_delivery_compat3_enable_module?(project)
         users  = journal.notified_users | journal.notified_watchers
         users.select! do |user|
           journal.notes? || journal.visible_details(user).any?
@@ -27,7 +27,7 @@ module RedmineMailDeliveryCompat3
 
     def deliver_document_added(document, author)
       project = document.project
-      if enable_module?(project)
+      if mail_delivery_compat3_enable_module?(project)
         users = document.notified_users
         document_added(users, document, author).deliver_later
       else
@@ -39,7 +39,7 @@ module RedmineMailDeliveryCompat3
       container = attachments.first.container
       project = container.project
 
-      if enable_module?(project)
+      if mail_delivery_compat3_enable_module?(project)
         case container.class.name
         when 'Project', 'Version'
           users = project.notified_users.select {|user| user.allowed_to?(:view_files, project)}
@@ -55,7 +55,7 @@ module RedmineMailDeliveryCompat3
 
     def deliver_news_added(news)
       project = news.project
-      if enable_module?(project)
+      if mail_delivery_compat3_enable_module?(project)
         users = news.notified_users | news.notified_watchers_for_added_news
         news_added(users, news).deliver_later
       else
@@ -66,7 +66,7 @@ module RedmineMailDeliveryCompat3
     def deliver_news_comment_added(comment)
       news = comment.commented
       project = news.project
-      if enable_module?(project)
+      if mail_delivery_compat3_enable_module?(project)
         users = news.notified_users | news.notified_watchers
         news_comment_added(users, comment).deliver_later
       else
@@ -76,7 +76,7 @@ module RedmineMailDeliveryCompat3
 
     def deliver_message_posted(message)
       project = message.board.project
-      if enable_module?(project)
+      if mail_delivery_compat3_enable_module?(project)
         users  = message.notified_users
         users |= message.root.notified_watchers
         users |= message.board.notified_watchers
@@ -88,7 +88,7 @@ module RedmineMailDeliveryCompat3
 
     def deliver_wiki_content_added(wiki_content)
       project = wiki_content.page.wiki.project
-      if enable_module?(project)
+      if mail_delivery_compat3_enable_module?(project)
         users = wiki_content.notified_users | wiki_content.page.wiki.notified_watchers
         wiki_content_added(users, wiki_content).deliver_later
       else
@@ -98,7 +98,7 @@ module RedmineMailDeliveryCompat3
 
     def deliver_wiki_content_updated(wiki_content)
       project = wiki_content.page.wiki.project
-      if enable_module?(project)
+      if mail_delivery_compat3_enable_module?(project)
         users  = wiki_content.notified_users
         users |= wiki_content.page.notified_watchers
         users |= wiki_content.page.wiki.notified_watchers
@@ -110,7 +110,7 @@ module RedmineMailDeliveryCompat3
 
     private
 
-    def enable_module?(project)
+    def mail_delivery_compat3_enable_module?(project)
       project.module_enabled?(:mail_delivery_compat3)
     end
   end
@@ -118,7 +118,7 @@ module RedmineMailDeliveryCompat3
   module MailerPatch
     def process(action, *args)
       user = args.first
-      if delivery_methods.include?(action) && !user.is_a?(User)
+      if mail_delivery_methods.include?(action) && !user.is_a?(User)
         # Limitation: Use current user language.
         self.class.superclass.instance_method(:process).bind(self).call(action, *args)
       else
@@ -131,7 +131,7 @@ module RedmineMailDeliveryCompat3
         # does not contain user.id in `token_for`.
         @user = nil
 
-        classify_recipients(headers)
+        mail_delivery_compat3_classify_recipients(headers)
       end
 
       super
@@ -139,7 +139,7 @@ module RedmineMailDeliveryCompat3
 
     private
 
-    def classify_recipients(headers)
+    def mail_delivery_compat3_classify_recipients(headers)
       users = headers[:to]
       return if users.blank?
 
@@ -186,7 +186,7 @@ module RedmineMailDeliveryCompat3
       end
     end
 
-    def delivery_methods
+    def mail_delivery_methods
       [
         :issue_add,
         :issue_edit,
