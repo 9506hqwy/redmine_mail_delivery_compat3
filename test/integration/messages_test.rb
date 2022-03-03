@@ -14,6 +14,7 @@ class MessagesTest < Redmine::IntegrationTest
            :messages,
            :projects,
            :roles,
+           :user_preferences,
            :users,
            :watchers
 
@@ -37,13 +38,18 @@ class MessagesTest < Redmine::IntegrationTest
         })
     end
 
-    assert_equal 2, ActionMailer::Base.deliveries.length
+    assert_equal 3, ActionMailer::Base.deliveries.length
+    assert_equal 1, ActionMailer::Base.deliveries[0].to.length
+    assert_equal 1, ActionMailer::Base.deliveries[1].to.length
+    assert_equal 1, ActionMailer::Base.deliveries[2].to.length
 
-    mail0 = ActionMailer::Base.deliveries[0]
-    mail1 = ActionMailer::Base.deliveries[1]
+    to0 = ActionMailer::Base.deliveries[0].to
+    to1 = ActionMailer::Base.deliveries[1].to
+    to2 = ActionMailer::Base.deliveries[2].to
 
-    assert_equal ['jsmith@somenet.foo'], mail0.to
-    assert_equal ['dlopper@somenet.foo'], mail1.to
+    assert_include 'admin@somenet.foo', (to0 + to1 + to2)
+    assert_include 'jsmith@somenet.foo', (to0 + to1 + to2)
+    assert_include 'dlopper@somenet.foo', (to0 + to1 + to2)
   end
 
   def test_message_posted_compat3
@@ -66,6 +72,8 @@ class MessagesTest < Redmine::IntegrationTest
     assert_equal 2, ActionMailer::Base.deliveries.last.to.length
     assert_include 'jsmith@somenet.foo', ActionMailer::Base.deliveries.last.to
     assert_include 'dlopper@somenet.foo', ActionMailer::Base.deliveries.last.to
+    assert_equal 1, ActionMailer::Base.deliveries.last.cc.length
+    assert_include 'admin@somenet.foo', ActionMailer::Base.deliveries.last.cc
   end
 
   def test_message_posted_compat3_watcher
@@ -92,7 +100,8 @@ class MessagesTest < Redmine::IntegrationTest
     assert_equal 2, ActionMailer::Base.deliveries.last.to.length
     assert_include 'jsmith@somenet.foo', ActionMailer::Base.deliveries.last.to
     assert_include 'dlopper@somenet.foo', ActionMailer::Base.deliveries.last.to
-    assert_equal 1, ActionMailer::Base.deliveries.last.cc.length
+    assert_equal 2, ActionMailer::Base.deliveries.last.cc.length
+    assert_include 'admin@somenet.foo', ActionMailer::Base.deliveries.last.cc
     assert_include 'rhill@somenet.foo', ActionMailer::Base.deliveries.last.cc
   end
 end

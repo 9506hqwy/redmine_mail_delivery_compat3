@@ -13,7 +13,9 @@ class DocumentsTest < Redmine::IntegrationTest
            :members,
            :projects,
            :roles,
-           :users
+           :user_preferences,
+           :users,
+           :watchers
 
   def setup
     Setting.bcc_recipients = false

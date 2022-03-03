@@ -14,7 +14,9 @@ class NewssTest < Redmine::IntegrationTest
            :news,
            :projects,
            :roles,
-           :users
+           :user_preferences,
+           :users,
+           :watchers
 
   def setup
     Setting.bcc_recipients = false
