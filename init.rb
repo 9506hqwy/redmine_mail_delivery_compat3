@@ -5,7 +5,9 @@ unless Redmine::VERSION::MAJOR >= 4
 end
 
 require_dependency 'mail_delivery_compat3/issues_helper_patch'
+require_dependency 'mail_delivery_compat3/listener'
 require_dependency 'mail_delivery_compat3/mailer_patch'
+require_dependency 'mail_delivery_compat3/wiki_extensions_comments_mailer_patch'
 
 Redmine::Plugin.register :redmine_mail_delivery_compat3 do
   name 'Redmine Mail Delivery Compat3 plugin'
