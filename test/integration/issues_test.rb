@@ -21,7 +21,7 @@ class IssuesTest < Redmine::IntegrationTest
            :watchers
 
   def setup
-    Setting.bcc_recipients = false
+    Setting.bcc_recipients = false if Setting.available_settings.key?('bcc_recipients')
     Setting.notified_events = ['issue_added', 'issue_updated']
     ActionMailer::Base.deliveries.clear
   end
