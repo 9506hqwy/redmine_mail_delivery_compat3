@@ -4,10 +4,18 @@ unless Redmine::VERSION::MAJOR >= 4
   return
 end
 
-require_dependency 'mail_delivery_compat3/issues_helper_patch'
-require_dependency 'mail_delivery_compat3/listener'
-require_dependency 'mail_delivery_compat3/mailer_patch'
-require_dependency 'mail_delivery_compat3/wiki_extensions_comments_mailer_patch'
+basedir = File.expand_path('../lib', __FILE__)
+libraries =
+  [
+    'redmine_mail_delivery_compat3/issues_helper_patch',
+    'redmine_mail_delivery_compat3/listener',
+    'redmine_mail_delivery_compat3/mailer_patch',
+    'redmine_mail_delivery_compat3/wiki_extensions_comments_mailer_patch',
+  ]
+
+libraries.each do |library|
+  require_dependency File.expand_path(library, basedir)
+end
 
 Redmine::Plugin.register :redmine_mail_delivery_compat3 do
   name 'Redmine Mail Delivery Compat3 plugin'
