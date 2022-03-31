@@ -28,7 +28,7 @@ class IssuesTest < Redmine::IntegrationTest
   end
 
   def test_issue_add
-    log_user('admin', 'admin')
+    log_user('jsmith', 'jsmith')
 
     perform_enqueued_jobs do
       new_record(Issue) do
@@ -57,7 +57,7 @@ class IssuesTest < Redmine::IntegrationTest
   def test_issue_add_compat3
     Project.find(1).enable_module!(:mail_delivery_compat3)
 
-    log_user('admin', 'admin')
+    log_user('jsmith', 'jsmith')
 
     perform_enqueued_jobs do
       new_record(Issue) do
@@ -90,7 +90,7 @@ class IssuesTest < Redmine::IntegrationTest
     mem2.mail_notification = false
     mem2.save!
 
-    log_user('admin', 'admin')
+    log_user('jsmith', 'jsmith')
 
     perform_enqueued_jobs do
       new_record(Issue) do
@@ -116,7 +116,7 @@ class IssuesTest < Redmine::IntegrationTest
   end
 
   def test_issue_edit
-    log_user('admin', 'admin')
+    log_user('jsmith', 'jsmith')
 
     perform_enqueued_jobs do
       put(
@@ -145,7 +145,7 @@ class IssuesTest < Redmine::IntegrationTest
   def test_issue_edit_compat3
     Project.find(1).enable_module!(:mail_delivery_compat3)
 
-    log_user('admin', 'admin')
+    log_user('jsmith', 'jsmith')
 
     perform_enqueued_jobs do
       put(
@@ -178,7 +178,7 @@ class IssuesTest < Redmine::IntegrationTest
     issue2.watcher_user_ids << user3.id
     issue2.save!
 
-    log_user('admin', 'admin')
+    log_user('jsmith', 'jsmith')
 
     perform_enqueued_jobs do
       put(
