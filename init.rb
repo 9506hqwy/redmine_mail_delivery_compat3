@@ -10,6 +10,7 @@ libraries =
     'redmine_mail_delivery_compat3/issues_helper_patch',
     'redmine_mail_delivery_compat3/listener',
     'redmine_mail_delivery_compat3/mailer_patch',
+    'redmine_mail_delivery_compat3/mentionable_patch',
     'redmine_mail_delivery_compat3/wiki_extensions_comments_mailer_patch',
   ]
 

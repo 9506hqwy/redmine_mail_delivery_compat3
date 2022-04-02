@@ -6,6 +6,7 @@ module RedmineMailDeliveryCompat3
       project = issue.project
       if mail_delivery_compat3_enable_module?(project)
         users = issue.notified_users | issue.notified_watchers
+        users |= issue.notified_mentions if mail_delivery_compat3_enable_mention
         issue_add(users, issue).deliver_later
       else
         super
@@ -16,6 +17,8 @@ module RedmineMailDeliveryCompat3
       project = journal.project
       if mail_delivery_compat3_enable_module?(project)
         users  = journal.notified_users | journal.notified_watchers
+        users |= journal.notified_mentions if mail_delivery_compat3_enable_mention
+        users |= journal.journalized.notified_mentions if mail_delivery_compat3_enable_mention
         users.select! do |user|
           journal.notes? || journal.visible_details(user).any?
         end
@@ -90,6 +93,7 @@ module RedmineMailDeliveryCompat3
       project = wiki_content.page.wiki.project
       if mail_delivery_compat3_enable_module?(project)
         users = wiki_content.notified_users | wiki_content.page.wiki.notified_watchers
+        users |= wiki_content.notified_mentions if mail_delivery_compat3_enable_mention
         wiki_content_added(users, wiki_content).deliver_later
       else
         super
@@ -102,10 +106,15 @@ module RedmineMailDeliveryCompat3
         users  = wiki_content.notified_users
         users |= wiki_content.page.notified_watchers
         users |= wiki_content.page.wiki.notified_watchers
+        users |= wiki_content.notified_mentions if mail_delivery_compat3_enable_mention
         wiki_content_updated(users, wiki_content).deliver_later
       else
         super
       end
+    end
+
+    def mail_delivery_compat3_enable_mention
+      Redmine::VERSION::MAJOR >= 5
     end
 
     private
@@ -144,12 +153,23 @@ module RedmineMailDeliveryCompat3
       return if users.blank?
 
       if @journal # issue_edit
-        to = users & @journal.notified_users
+        to = @journal.notified_users
+        if self.class.mail_delivery_compat3_enable_mention
+          @journal.mail_delivery_compat3_parse_mentions_for_issue_edit
+          to |= @journal.notified_mentions
+          to |= @journal.journalized.notified_mentions
+        end
+        to &= users
         cc = (users & @journal.notified_watchers) - to
         headers[:to] = to
         headers[:cc] = cc
       elsif @issue # issue_add
-        to = users & @issue.notified_users
+        to = @issue.notified_users
+        if self.class.mail_delivery_compat3_enable_mention
+          @issue.mail_delivery_compat3_parse_mentions_for_issue_add
+          to |= @issue.notified_mentions
+        end
+        to &= users
         cc = (users & @issue.notified_watchers) - to
         headers[:to] = to
         headers[:cc] = cc
@@ -176,7 +196,12 @@ module RedmineMailDeliveryCompat3
         headers[:to] = to
         headers[:cc] = cc
       elsif @wiki_content # wiki_content_added / wiki_content_updated
-        to = users & @wiki_content.notified_users
+        to = @wiki_content.notified_users
+        if self.class.mail_delivery_compat3_enable_mention
+          @wiki_content.mail_delivery_compat3_parse_mentions_for_wiki_content
+          to |= @wiki_content.notified_mentions
+        end
+        to &= users
         cc = @wiki_content.page.wiki.notified_watchers
         cc |= @wiki_content.page.notified_watchers
         cc &= users
