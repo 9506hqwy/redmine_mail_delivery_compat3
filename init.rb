@@ -22,7 +22,7 @@ Redmine::Plugin.register :redmine_mail_delivery_compat3 do
   name 'Redmine Mail Delivery Compat3 plugin'
   author '9506hqwy'
   description 'This is a mail delivery Redmine3 compatible plugin for Redmine'
-  version '0.1.0'
+  version '0.2.0'
   url 'https://github.com/9506hqwy/redmine_mail_delivery_compat3'
   author_url 'https://github.com/9506hqwy'
 
