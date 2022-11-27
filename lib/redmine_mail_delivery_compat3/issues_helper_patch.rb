@@ -44,4 +44,6 @@ module RedmineMailDeliveryCompat3
   end
 end
 
-IssuesHelper.prepend RedmineMailDeliveryCompat3::IssuesHelperPatch
+Rails.application.config.after_initialize do
+  Mailer.send(:helper, RedmineMailDeliveryCompat3::IssuesHelperPatch)
+end
