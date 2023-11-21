@@ -22,6 +22,7 @@ This plugin provides a mail send per notification event like Redmine3.
   * 4.1
   * 4.2
   * 5.0
+  * 5.1
 * Database
   * SQLite
   * MySQL 5.7
